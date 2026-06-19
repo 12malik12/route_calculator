@@ -21,9 +21,14 @@ SECRET_KEY = os.environ.get(
     "DJANGO_SECRET_KEY", "dev-insecure-key-change-me-in-production"
 )
 
+# Render environment should have DJANGO_DEBUG set to 0
 DEBUG = os.environ.get("DJANGO_DEBUG", "1") == "1"
 
-ALLOWED_HOSTS = ["*"]
+# Dynamically updates based on whether you are running locally or on Render
+if DEBUG:
+    ALLOWED_HOSTS = ["*"]
+else:
+    ALLOWED_HOSTS = [".onrender.com", "localhost", "127.0.0.1"]
 
 INSTALLED_APPS = [
     "django.contrib.contenttypes",
@@ -60,12 +65,19 @@ DATABASES = {
     }
 }
 
+# Static files settings
 STATIC_URL = "static/"
+STATIC_ROOT = BASE_DIR / "staticfiles"  # <-- ADDED THIS TO FIX THE RENDER BUILD ERROR
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# CORS: allow the Vite dev server to call the API.
-CORS_ALLOW_ALL_ORIGINS = True
+# CORS configuration: secure it for production, leave open for local Vite dev
+if DEBUG:
+    CORS_ALLOW_ALL_ORIGINS = True
+else:
+    CORS_ALLOWED_ORIGINS = [
+        "https://route-calculator-5896-heo6nwtmd-47tesfayewk-8191s-projects.vercel.app/",  # FIXME: Replace with your actual live Vercel domain
+    ]
 
 REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": [
