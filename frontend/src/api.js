@@ -1,7 +1,7 @@
 // API client for the Django backend. Requests go through the Vite proxy
 // (see vite.config.js) so the same-origin "/api" path reaches Django.
 export async function calculateTrip(payload) {
-  const res = await fetch("https://route-calculator-bi9w.onrender.com", {
+  const res = await fetch("https://route-calculator-bi9w.onrender.com/api/trip/calculate/", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
